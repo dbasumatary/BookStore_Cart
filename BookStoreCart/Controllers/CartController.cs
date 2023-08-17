@@ -140,6 +140,25 @@ namespace BookStoreCart.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetCartItemsById")]
+        public ResponseEntity GetCartItemsById(int userId)
+        {
+            //int userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.Sid));
+            IEnumerable<CartEntity> books = _cartService.GetCartDetailsById(userId);
+
+            if (books.Any())
+            {
+                response.Data = books;
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "No books present in cart";
+            }
+            return response;
+        }
+
 
         [HttpGet]
         [Route("GetCartItems")]

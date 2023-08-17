@@ -87,7 +87,13 @@ namespace BookStoreCart.Service
             return cart;
         }
 
-        
+        public IEnumerable<CartEntity> GetCartDetailsById(int id)
+        {
+            IEnumerable<CartEntity> cart = _context.Cart.Where(x => x.UserId == id);
+            return cart;
+        }
+
+
 
         public CartEntity UpdateCart(int bookId, CartEntity updatedCart)
         {

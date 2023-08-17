@@ -9,6 +9,7 @@ namespace BookStoreCart.Interface
         CartEntity UpdateCartQuantity(int bookId, int newQuantity);
         bool DeleteFromCart(int bookId);
         IEnumerable<CartEntity> GetCartDetails();
+        IEnumerable<CartEntity> GetCartDetailsById(int userId);
         float CalculateTotalPrice(int userId);
     }
 }
