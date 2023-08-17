@@ -17,7 +17,7 @@ namespace BookStoreCart.Service
 
         }
 
-        public async Task<CartEntity> AddToCart(string token, int userId, int bookId, int cartQuantity)
+        /*public async Task<CartEntity> AddToCart(string token, int userId, int bookId, int cartQuantity)
         {
             CartEntity newCart = new CartEntity()
             {
@@ -28,14 +28,43 @@ namespace BookStoreCart.Service
                 Quantity = cartQuantity,
                 Book = await _book.GetBookById(bookId),
                 User = await _user.GetUser(token)
+                
             };
+            //newCart.Book.DiscountedPrice = _context.Add();
             _context.Cart.Add(newCart);
             _context.SaveChanges();
             return newCart;
+        }*/
+
+        public async Task<CartEntity> AddToCart(string token, int userId, int bookId, int cartQuantity)
+        {
+            BookEntity book = await _book.GetBookById(bookId); // Retrieving the book details
+            UserEntity user = await _user.GetUser(token); // Retrieving the user details
+
+            if (book != null && user != null)
+            {
+                CartEntity newCart = new CartEntity()
+                {
+                    CartId = Guid.NewGuid().ToString(),
+                    BookId = bookId,
+                    UserId = userId,
+                    BookName = book.BookName, 
+                    Price = book.DiscountedPrice,
+                    Quantity = cartQuantity,
+                    Book = book,
+                    User = user
+                };
+
+                _context.Cart.Add(newCart);
+                _context.SaveChanges();
+
+                return newCart;
+            }
+
+            return null; 
         }
 
 
-        
 
         public bool DeleteFromCart(int bookId)
         {
@@ -76,5 +105,39 @@ namespace BookStoreCart.Service
             }
             return cart;
         }
+
+        public CartEntity UpdateCartQuantity(int bookId, int newQuantity)
+        {
+            CartEntity cart = _context.Cart.FirstOrDefault(x => x.BookId == bookId);
+
+            if (cart != null)
+            {
+                cart.Quantity = newQuantity;
+                _context.Cart.Update(cart);
+                _context.SaveChanges();
+            }
+
+            return cart;
+        }
+
+        public float CalculateTotalPrice(int userId)
+        {
+            float totalPrice = 0;
+
+            var cartItems = _context.Cart.Where(c => c.UserId == userId).ToList();
+
+            foreach (var cartItem in cartItems)
+            {
+                var book = _book.GetBookById(cartItem.BookId).Result; // 
+                if (book != null)
+                {
+                    float bookPrice = cartItem.Quantity * book.DiscountedPrice;
+                    totalPrice += bookPrice;
+                }
+            }
+
+            return totalPrice;
+        }
+
     }
 }

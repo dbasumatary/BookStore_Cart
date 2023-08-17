@@ -44,7 +44,7 @@ namespace BookStoreCart.Controllers
             else
             {
                 response.IsSuccess = false;
-                response.Message = "Something went wrong";
+                response.Message = "Error : Book not added to cart";
             }
 
             return response;
@@ -73,6 +73,28 @@ namespace BookStoreCart.Controllers
 
 
         [Authorize]
+        [HttpPut]
+        [Route("UpdateCartQuantity")]
+        public ResponseEntity UpdateCartQuantity(int bookId, int quantity)
+        {
+            CartEntity updatedCart = _cartService.UpdateCartQuantity(bookId, quantity);
+
+            if (updatedCart != null)
+            {
+                response.IsSuccess = true;
+                response.Data = updatedCart;
+                response.Message = "Book is edited successfully";
+            }
+            else
+            {
+                response.IsSuccess = false;
+                response.Message = "Cannot edit the book";
+            }
+            return response;
+        }
+
+
+        [Authorize]
         [HttpDelete]
         [Route("DeleteBookInCart")]
         public ResponseEntity DeleteBookInCart(int bookId)
@@ -82,6 +104,7 @@ namespace BookStoreCart.Controllers
             if (result)
             {
                 response.Data = result;
+                response.Message = "Book deleted successfully";
             }
             else
             {
@@ -90,6 +113,32 @@ namespace BookStoreCart.Controllers
             }
             return response;
         }
+
+
+        [Authorize]
+        [HttpGet]
+        [Route("CalculateTotalPrice")]
+        public ResponseEntity CalculateTotalPrice()
+        {
+            try
+            {
+                int userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.Sid));
+
+                float totalPrice = _cartService.CalculateTotalPrice(userId);
+
+                response.IsSuccess = true;
+                response.Data = "The total price of books in cart is : " + totalPrice;
+                response.Message = "Total price calculated successfully.";
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "An error occurred while calculating the total price.";
+            }
+
+            return response;
+        }
+
 
 
         [HttpGet]
@@ -105,7 +154,7 @@ namespace BookStoreCart.Controllers
             else
             {
                 response.IsSuccess = false;
-                response.Message = "No items in cart";
+                response.Message = "No books present in cart";
             }
             return response;
         }

@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStoreCart.Migrations
 {
     [DbContext(typeof(CartContext))]
-    [Migration("20230816083721_firstTest")]
+    [Migration("20230817085438_firstTest")]
     partial class firstTest
     {
         /// <inheritdoc />
@@ -35,6 +35,9 @@ namespace BookStoreCart.Migrations
                     b.Property<string>("BookName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
